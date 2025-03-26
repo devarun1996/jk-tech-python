@@ -6,8 +6,8 @@ __pycache__/
 *.pyc
 *.pyo
 
-# Ignore database migrations cache
-migrations/versions/
+# Ignore database migrations files
+migrations/README
 migrations/script.py.mako
 
 # Ignore editor and OS-specific files
