@@ -8,6 +8,7 @@ __pycache__/
 
 # Ignore database migrations cache
 migrations/versions/
+migrations/script.py.mako
 
 # Ignore editor and OS-specific files
 .vscode/
