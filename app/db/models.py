@@ -1,3 +1,4 @@
+import pickle
 from sqlalchemy import Column, LargeBinary, String, Text, DateTime, Enum
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
@@ -7,10 +8,10 @@ from app.db.database import Base
 import enum
 
 class IngestionStatus(str, enum.Enum):
-    PENDING = "pending"
-    PROCESSING = "processing"
-    COMPLETED = "completed"
-    FAILED = "failed"
+    PENDING = "PENDING"
+    PROCESSING = "PROCESSING"
+    COMPLETED = "COMPLETED"
+    FAILED = "FAILED"
 
 
 class Document(Base):
@@ -23,3 +24,11 @@ class Document(Base):
     status = Column(Enum(IngestionStatus, name="ingestionstatus"), default=IngestionStatus.PENDING, nullable=False)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+
+    def set_embedding(self, embedding_list):
+        """Convert list to binary before storing"""
+        self.embedding = pickle.dumps(embedding_list)
+
+    def get_embedding(self):
+        """Convert binary back to list"""
+        return pickle.loads(self.embedding) if self.embedding else None
