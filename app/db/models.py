@@ -20,6 +20,6 @@ class Document(Base):
     document_source_id = Column(String, nullable=False, unique=True)  # NestJS document ID
     content = Column(Text, nullable=False)
     embedding = Column(LargeBinary, nullable=True)  # Stores serialized embeddings
-    status = Column(Enum(IngestionStatus), default=IngestionStatus.PENDING, nullable=False)
+    status = Column(Enum(IngestionStatus, name="ingestionstatus"), default=IngestionStatus.PENDING, nullable=False)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
