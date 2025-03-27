@@ -9,8 +9,8 @@ import enum
 class IngestionStatus(str, enum.Enum):
     PENDING = "pending"
     PROCESSING = "processing"
-    COMPLETED = "Completed"
-    FAILED = "Failed"
+    COMPLETED = "completed"
+    FAILED = "failed"
 
 
 class Document(Base):
