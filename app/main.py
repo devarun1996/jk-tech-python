@@ -1,9 +1,10 @@
 from fastapi import FastAPI
-from app.routes import ingestion
+from app.routes import ingestion, qa
 
 app = FastAPI()
 
 app.include_router(ingestion.router, prefix="/api")
+app.include_router(qa.router, prefix="/api")
 
 @app.get("/")
 def home():
