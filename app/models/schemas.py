@@ -1,5 +1,5 @@
 from pydantic import BaseModel
 
 class IngestRequest(BaseModel):
-    documentId: str
+    document_id: str
     content: str
