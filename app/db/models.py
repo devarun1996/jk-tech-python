@@ -7,8 +7,8 @@ from app.db.database import Base
 import enum
 
 class IngestionStatus(str, enum.Enum):
-    PENDING = "Pending"
-    PROCESSING = "Processing"
+    PENDING = "pending"
+    PROCESSING = "processing"
     COMPLETED = "Completed"
     FAILED = "Failed"
 
