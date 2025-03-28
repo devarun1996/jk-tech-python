@@ -38,5 +38,5 @@ class SelectedDocument(Base):
     __tablename__ = "selected_documents"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
-    user_id = Column(UUID(as_uuid=True), nullable=False)
+    user_id = Column(String, nullable=False)
     document_id = Column(UUID(as_uuid=True), ForeignKey("documents.id"), nullable=False)
