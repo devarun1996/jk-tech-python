@@ -21,6 +21,9 @@ def get_answer(user_id: str, question: str, db: Session):
     # Generate an answer using the LLM
     response = qa_pipeline(question=question, context=best_doc.content)
 
+    if response["score"] < 0.1:  # Adjust threshold as needed
+        return "No relevant answer found."
+
     return response["answer"]
 
 
