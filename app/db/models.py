@@ -1,5 +1,5 @@
 import pickle
-from sqlalchemy import Column, LargeBinary, String, Text, DateTime, Enum
+from sqlalchemy import Column, ForeignKey, LargeBinary, String, Text, DateTime, Enum
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
 from datetime import datetime, timezone
@@ -32,3 +32,11 @@ class Document(Base):
     def get_embedding(self):
         """Convert binary back to list"""
         return pickle.loads(self.embedding) if self.embedding else None
+    
+
+class SelectedDocument(Base):
+    __tablename__ = "selected_documents"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    user_id = Column(UUID(as_uuid=True), primary_key=True)
+    document_id = Column(UUID(as_uuid=True), ForeignKey("documents.id"), primary_key=True)
