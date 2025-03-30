@@ -36,7 +36,7 @@ def ingest_api(request: IngestRequest, background_tasks: BackgroundTasks, db: Se
     # Step 2: Start the ingestion process asynchronously
     background_tasks.add_task(ingest_document, db, new_document.id, request.content)
 
-    return {"document_id": new_document.id, "status": new_document.status}
+    return {"document_id": new_document.document_source_id, "status": new_document.status}
 
 
 # API to check the ingestion status of a document.
