@@ -1,18 +1,41 @@
-from fastapi import APIRouter, Depends, HTTPException
+import redis
+import uuid
+import json
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
 from app.db.database import get_db
-from app.db.models import SelectedDocument
-from app.models.schemas import DocumentSelectionRequest, QuestionRequest
-from app.services.qa_service import get_answer
+from app.services.qa_service import get_answer, process_question
+from app.models.schemas import QuestionRequest
+from app.utils.config import redis_client
+
 
 router = APIRouter()
 
 @router.post("/qa")
-def ask_question(request: QuestionRequest, db: Session = Depends(get_db)):
+def ask_question(request: QuestionRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     user_id = request.user_id if request.user_id else None
-    answer = get_answer(user_id, request.question, db)
+    question = request.question
+    task_id = str(uuid.uuid4())
 
-    if not answer:
-        raise HTTPException(status_code=404, detail="No relevant answer found.")
-    
-    return { "answer": answer }
+    # Check Redis for existing answer
+    cached_answer = redis_client.get(f"qa:{user_id}:{question}")
+    if cached_answer:
+        return {"task_id": task_id, "answer": json.loads(cached_answer)}
+
+    # Process the question asynchronously and store the answer in Redis
+    background_tasks.add_task(process_question, user_id, question, db, task_id)
+
+    return {"task_id": task_id, "status": "processing"}
+
+
+@router.get("/qa/status/{task_id}")
+def get_qa_status(task_id: str):
+
+    # Check the status of an ongoing Q&A request.
+    task_data = redis_client.get(f"task:{task_id}")
+
+    if not task_data:
+        return {"task_id": task_id, "status": "processing"}
+
+    return json.loads(task_data)
+
