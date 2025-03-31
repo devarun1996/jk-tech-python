@@ -49,22 +49,53 @@ def select_documents(doc_select_request: DocumentSelectionRequest, db: Session =
 
 @router.get("/get-selected-documents/{user_id}")
 def get_selected_documents(user_id: str, db: Session = Depends(get_db)):
-    selected_docs = db.query(SelectedDocument.document_id).filter(SelectedDocument.user_id == user_id).all()
-    
-    return {"selected_documents": [doc_id[0] for doc_id in selected_docs]}
+    selected_docs = (
+        db.query(SelectedDocument.document_id, Document.document_source_id)
+        .join(Document, SelectedDocument.document_id == Document.id)
+        .filter(SelectedDocument.user_id == user_id)
+        .all()
+    )
+
+    # Convert query result into list of dictionaries
+    result = [{"document_id": doc_id, "document_source_id": source_id} for doc_id, source_id in selected_docs]
+
+    return {"selected_documents": result}
 
 
 @router.delete("/unselect-document")
 def unselect_document(removeDocumentRequest: DocumentUnselectionRequest, db: Session = Depends(get_db)):
     user_id = removeDocumentRequest.user_id
-    document_id = removeDocumentRequest.document_id
+    document_source_id = removeDocumentRequest.document_id
 
-    db.query(SelectedDocument).filter(
+    # Fetch the actual document ID from the database using document_source_id
+    document = db.query(Document).filter(Document.document_source_id == document_source_id).first()
+
+    if not document:
+        return {
+            "message": "Document not found for the given document_source_id",
+            "document_source_id": document_source_id,
+            "status": "failed"
+        }
+
+    # Delete the selection record if it exists
+    deleted_rows = db.query(SelectedDocument).filter(
         SelectedDocument.user_id == user_id,
-        SelectedDocument.document_id == document_id
+        SelectedDocument.document_id == document.id
     ).delete()
-    
+
     db.commit()
-    return {"message": "Document unselected successfully"}
+
+    if deleted_rows == 0:
+        return {
+            "message": "No matching selection found for the user and document",
+            "document_source_id": document_source_id,
+            "status": "failed"
+        }
+
+    return {
+        "message": "Document unselected successfully",
+        "document_source_id": document_source_id,
+        "status": "success"
+    }
 
 
