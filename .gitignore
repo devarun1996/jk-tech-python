@@ -17,3 +17,6 @@ migrations/script.py.mako
 
 # Ignore env
 .env
+
+# Ignore test data coverage
+.coverage

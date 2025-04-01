@@ -5,7 +5,6 @@ import os
 
 # Load pre-trained embedding model
 MODEL_NAME = os.getenv("PRE_TRAINED_EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
-
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 model = AutoModel.from_pretrained(MODEL_NAME)
 
