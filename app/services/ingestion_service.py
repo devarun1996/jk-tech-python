@@ -1,9 +1,11 @@
 from sentence_transformers import SentenceTransformer
 from sqlalchemy.orm import Session
 from app.db import models
+import os
 
 # Load embedding model
-embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
+MODEL_NAME = os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
+embedding_model = SentenceTransformer(MODEL_NAME)
 
 
 def ingest_document(db: Session, document_id: int, content: str):

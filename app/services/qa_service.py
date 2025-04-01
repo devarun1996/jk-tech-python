@@ -1,4 +1,4 @@
-import redis
+import os
 import pickle
 import json
 import numpy as np
@@ -6,11 +6,13 @@ from sqlalchemy.orm import Session
 from app.db.models import Document, SelectedDocument
 from app.services.embedding_service import generate_embedding
 from transformers import pipeline
-from app.utils.config import redis_client
+from app.utils.redis import redis_client
 
+# Load model name from environment variable
+model_name = os.getenv("LLM_MODEL", "deepset/roberta-base-squad2")
 
 # Load the Hugging Face model pipeline (use a suitable LLM for Q&A)
-qa_pipeline = pipeline("question-answering", model="deepset/roberta-base-squad2")
+qa_pipeline = pipeline("question-answering", model=model_name)
 
 
 def process_question(user_id: str, question: str, db: Session, task_id: str):

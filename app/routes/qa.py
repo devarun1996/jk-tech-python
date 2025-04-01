@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from app.db.database import get_db
 from app.services.qa_service import get_answer, process_question
 from app.models.schemas import QuestionRequest
-from app.utils.config import redis_client
+from app.utils.redis import redis_client
 
 
 router = APIRouter()

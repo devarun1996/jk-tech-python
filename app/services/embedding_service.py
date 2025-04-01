@@ -1,8 +1,11 @@
 from transformers import AutoModel, AutoTokenizer
 import torch
+import os
 
-# Load pre-trained embedding model (e.g., all-MiniLM)
-MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
+
+# Load pre-trained embedding model
+MODEL_NAME = os.getenv("PRE_TRAINED_EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
+
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 model = AutoModel.from_pretrained(MODEL_NAME)
 
