@@ -19,7 +19,7 @@ def process_question(user_id: str, question: str, db: Session, task_id: str):
     """
 
     # Check if the answer is already cached
-    cached_answer = redis_client.get(f"qa:{user_id}:{question}")
+    cached_answer = redis_client.get(f"qa:{question}")
     if cached_answer:
         answer = json.loads(cached_answer)
     else:
@@ -28,10 +28,10 @@ def process_question(user_id: str, question: str, db: Session, task_id: str):
             answer = "No relevant answer found."
 
         # Store result in Redis (Cache for 1 hour)
-        redis_client.setex(f"qa:{user_id}:{question}", 3600, json.dumps(answer))
+        redis_client.setex(f"qa:{question}", 3600, json.dumps(answer))
 
     # Store task status in Redis
-    redis_client.set(f"task:{task_id}", json.dumps({"status": "completed", "answer": answer}))
+    redis_client.setex(f"task:{task_id}", 3600, json.dumps({"status": "completed", "answer": answer}))
 
 
 def get_answer(user_id: str, question: str, db: Session):

@@ -18,8 +18,9 @@ def ask_question(request: QuestionRequest, background_tasks: BackgroundTasks, db
     task_id = str(uuid.uuid4())
 
     # Check Redis for existing answer
-    cached_answer = redis_client.get(f"qa:{user_id}:{question}")
+    cached_answer = redis_client.get(f"qa:{question}")
     if cached_answer:
+        redis_client.set(f"task:{task_id}", json.dumps({"status": "completed", "answer": json.loads(cached_answer)}))
         return {"task_id": task_id, "answer": json.loads(cached_answer)}
 
     # Process the question asynchronously and store the answer in Redis
