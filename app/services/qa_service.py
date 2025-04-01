@@ -7,6 +7,11 @@ from app.db.models import Document, SelectedDocument
 from app.services.embedding_service import generate_embedding
 from transformers import pipeline
 from app.utils.redis import redis_client
+import logging
+
+# Set up logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 # Load model name from environment variable
 model_name = os.getenv("LLM_MODEL", "deepset/roberta-base-squad2")
@@ -68,6 +73,7 @@ def get_matching_document(user_id: str, question: str, db: Session):
     selected_doc_ids = [doc_id[0] for doc_id in selected_doc_ids]
 
     documents = db.query(Document).filter(Document.id.in_(selected_doc_ids)).all() if selected_doc_ids else db.query(Document).all()
+
     if not documents:
         return None
 
