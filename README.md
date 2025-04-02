@@ -83,4 +83,27 @@ http://localhost:5000/docs
 - Responds to Q&A queries via API.
 - Provides a polling like feature via taskId status check API.
 
+## 5. Testing
+
+- Running All Tests with Coverage
+```sh
+pytest --cov=app app/tests/
+```
+
+- Running a Specific Test Module
+```sh
+pytest app/tests/test_qa.py
+pytest app/tests/test_ingestion.py
+pytest app/tests/test_embeddings.py
+```
+
+## 6. Scripts
+
+- Generate embeddings using a script
+  1. Paste the sample content inside the app/scripts/generate_embedding.py file
+  2. Run the below script:
+  ```sh
+  python app/scripts/generate_embedding.py
+  ```
+  3. Embedding is logged in the console.
 
