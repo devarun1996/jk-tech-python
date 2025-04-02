@@ -3,7 +3,7 @@ import pickle
 import json
 import numpy as np
 from sqlalchemy.orm import Session
-from app.db.models import Document, SelectedDocument
+from app.db.models import Document, IngestionStatus, SelectedDocument
 from app.services.embedding_service import generate_embedding
 from transformers import pipeline
 from app.utils.redis import redis_client
@@ -72,7 +72,8 @@ def get_matching_document(user_id: str, question: str, db: Session):
     selected_doc_ids = db.query(SelectedDocument.document_id).filter(SelectedDocument.user_id == user_id).all() if user_id else []
     selected_doc_ids = [doc_id[0] for doc_id in selected_doc_ids]
 
-    documents = db.query(Document).filter(Document.id.in_(selected_doc_ids)).all() if selected_doc_ids else db.query(Document).all()
+    documents = db.query(Document).filter(Document.id.in_(selected_doc_ids), Document.status==IngestionStatus.COMPLETED).all()\
+          if selected_doc_ids else db.query(Document).filter(Document.status==IngestionStatus.COMPLETED).all()
 
     if not documents:
         return None
