@@ -4,7 +4,7 @@ import json
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
 from app.db.database import get_db
-from app.services.qa_service import get_answer, process_question
+from app.services.qa_service import process_question
 from app.models.schemas import QuestionRequest
 from app.utils.redis import redis_client
 
